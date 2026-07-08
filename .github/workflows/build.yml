@@ -1,0 +1,50 @@
+name: Build IdleCat executables
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyinstaller
+      - run: pyinstaller --onefile --noconsole --name IdleCat idle_cat.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IdleCat-Windows
+          path: dist/IdleCat.exe
+
+  macos-apple-silicon:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyinstaller
+      - run: pyinstaller --onefile --windowed --name IdleCat idle_cat.py
+      - run: cd dist && zip -r IdleCat-macOS-AppleSilicon.zip IdleCat.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IdleCat-macOS-AppleSilicon
+          path: dist/IdleCat-macOS-AppleSilicon.zip
+
+  macos-intel:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyinstaller
+      - run: pyinstaller --onefile --windowed --name IdleCat idle_cat.py
+      - run: cd dist && zip -r IdleCat-macOS-Intel.zip IdleCat.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IdleCat-macOS-Intel
+          path: dist/IdleCat-macOS-Intel.zip
